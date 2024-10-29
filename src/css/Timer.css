@@ -1,0 +1,59 @@
+.Timer{
+    background-color:  #26273d;
+    color: white;
+    border-radius: 25px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.inside-Circle{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 8px solid #545576;
+    border-radius: 100%;
+    padding: 50px
+}
+
+.title-left{
+    color:  #a2a4cb;
+    font-size: smaller;
+    font-weight: 350;
+
+}    
+
+.time{
+    font-size: xx-large;
+    font-weight: 500;
+    margin:0px;
+}
+
+.button-group{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 30px;
+
+}
+
+.buttons{
+    width: 80px;
+    border-radius: 25px;
+    border: 2px solid #606170;
+    background-color: #26273d;
+    color: white;
+    font-weight: 10;
+    padding: 8px;
+}
+
+.buttons:hover{
+    border: 2px solid white;
+    cursor: pointer;
+}
