@@ -2,7 +2,8 @@
     height: 100%;
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
     align-items: center;
     background-color: #444444;
 
