@@ -12,6 +12,7 @@
     align-items: center;
     flex-direction: column;
     position: relative;
+    
 }
 
 .inside-Circle{
@@ -34,10 +35,13 @@
    
     position: absolute;
     z-index: 1;
+
+    
 }
 
 .half-Circle{
     position: absolute;
+    
 }
 
 .rotating-anim{

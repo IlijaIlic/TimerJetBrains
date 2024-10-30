@@ -7,24 +7,42 @@ import '../css/Timer.css'
 
 const Timer = ({title, endTime, elapsedTime}) => {
 
+  //const intervalRef = useRef(0)
   const [timerStatus, setTimerStatus] = useState(false);
   const [passedTime, setPassedTime] = useState(0);
-  const intervalRef = useRef(0)
   const startTime = useRef(0)
+  const animationFrameRef = useRef(null);
 
 
   const pausedAnim = timerStatus ? 'running' : 'paused';
 
-  useEffect(() => {
-    if(timerStatus){
-      intervalRef.current = setInterval(() => {
-        setPassedTime(Date.now() - startTime.current)
-      }, 1000);
+  const endTimeFormatted = endTime + "s";
+
+
+  const updateTimer = () => {
+    const currentTime = Date.now();
+    const passedTimeInTimer = currentTime - startTime.current;
+    
+    if (passedTimeInTimer / 1000 >= endTime) {
+      setPassedTime(endTime * 1000);
+      setTimerStatus(false);
+      cancelAnimationFrame(animationFrameRef.current);
+      return;
     }
     
-    return () => clearInterval(intervalRef.current) 
-  },[timerStatus])
-
+    setPassedTime(passedTimeInTimer);
+    animationFrameRef.current = requestAnimationFrame(updateTimer);
+  };
+  
+  useEffect(() => {
+    if (timerStatus) {
+      startTime.current = Date.now() - passedTime;
+      animationFrameRef.current = requestAnimationFrame(updateTimer);
+    } else {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    return () => cancelAnimationFrame(animationFrameRef.current);
+  }, [timerStatus]);
 
   function startTimer(){
     setTimerStatus(true);
@@ -38,28 +56,26 @@ const Timer = ({title, endTime, elapsedTime}) => {
   function formatTime(){
     let minutes = Math.floor(passedTime / (1000 * 60 ) % 60);
     let seconds = Math.floor(passedTime / (1000) % 60);
-    if (passedTime >= 10000){ 
-      
-    }
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
   return (
     <div className='Timer'>
       <div className='circles'>
-        <div className='outside-Circle' />
+        <div className='outside-Circle' style={{border: '1px solid #26273d'}} />
+        <div className='outside-Circle' style={{backgroundColor:'transparent', border: '1px solid #26273d', zIndex: 10}} />
 
         <div className={'half-Circle'} style={{zIndex: 4, rotate: '-90deg'}}>
-          <div className={'firstPart'+ ' ' + 'fixedPart'} style={ {backgroundColor: '#545576', animationPlayState: pausedAnim}} />
+          <div className={'firstPart'+ ' ' + 'fixedPart' } style={ {backgroundColor: '#545576', animationPlayState: pausedAnim}} />
           <div className='secondPart'/> 
         </div>
 
-        <div className={'half-Circle' + ' ' + 'rotating-anim'}  style={{zIndex: 3 , rotate: '-90deg', animationDuration: endTime, animationPlayState: pausedAnim}}>
+        <div className={'half-Circle' + ' ' + 'rotating-anim'}  style={{zIndex: 3 , rotate: '-90deg', animationDuration: endTimeFormatted, animationPlayState: pausedAnim}}>
           <div className='firstPart' style={ {backgroundColor: '#67cb88'}} />
           <div className='secondPart'/> 
         </div>
 
-        <div className={'half-Circle' + ' ' + 'rotating-anim2'}  style={{zIndex: 2 , rotate: '-90deg', animationDuration: endTime, animationPlayState: pausedAnim}}>
+        <div className={'half-Circle' + ' ' + 'rotating-anim2'}  style={{zIndex: 2 , rotate: '-90deg', animationDuration: endTimeFormatted, animationPlayState: pausedAnim}}>
           <div className='firstPart' style={ {backgroundColor: '#67cb88'}} />
           <div className='secondPart'/> 
         </div>
@@ -75,7 +91,7 @@ const Timer = ({title, endTime, elapsedTime}) => {
         <div className='button-group'>
           <button className='buttons' onClick={startTimer}>Start</button>  
           <button className='buttons' onClick={pauseTimer}>Pause</button>
-           <button className='buttons'>Reset</button>
+          <button className='buttons'>Reset</button>
         </div>
         
     </div>
