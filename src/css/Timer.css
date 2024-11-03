@@ -1,4 +1,4 @@
-.Timer{
+.timer{
     background-color:  #26273d;
     color: white;
     border-radius: 25px;
@@ -15,19 +15,7 @@
     
 }
 
-.inside-Circle{
-    border-radius: 100%;
-    height: 180px;
-    width: 180px;
-    background-color:  #26273d;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 10;
-}
-
-.outside-Circle{
+.outside-circle{
     border-radius: 100%;
     height: 200px;
     width: 200px;
@@ -39,7 +27,21 @@
     
 }
 
-.half-Circle{
+.inside-circle{
+    border-radius: 100%;
+    height: 180px;
+    width: 180px;
+    background-color:  #26273d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10;
+}
+
+
+
+.half-circle{
     position: absolute;
     
 }
@@ -107,12 +109,29 @@
     background-color:  transparent;
 }
 
-.fixedPart{
-    animation-name: fixedPart;
+.fixed-part{
+    animation-name: fixed-part;
     animation-iteration-count: 1;
     animation-timing-function: step-end;
     animation-duration: 10s;
     animation-fill-mode: forwards;
+}
+
+.flashing-anim{
+    animation-name: flashing;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes flashing {
+    0% {
+        background-color: #67cb88;}
+    50% {
+        background-color: #cb6767;
+ }
+    100% {
+        background-color: #67cb88;}
 }
 
 @keyframes rotation {
@@ -131,7 +150,7 @@
         transform: rotate(180deg);}
 }
 
-@keyframes fixedPart {
+@keyframes fixed-part {
     50%{
         background-color:  transparent;
     }

@@ -7,33 +7,54 @@ import '../css/Timer.css'
 
 const Timer = ({title, endTime, elapsedTime}) => {
 
-  //const intervalRef = useRef(0)
   const [timerStatus, setTimerStatus] = useState(false);
-  const [passedTime, setPassedTime] = useState(0);
+  const [passedTimeForAnim, setPassedTimeForAnim] = useState(elapsedTime*1000);
+  const [endTimeState, setEndTimeState] = useState(endTime);
+  const [passedTime, setPassedTime] = useState(elapsedTime * 1000);
   const startTime = useRef(0)
   const animationFrameRef = useRef(null);
 
+   // CSS ANIMATIONS
+   const [rotatingPart, setRotatingPart] = useState({
+    animationName: 'rotation',
+    animationIterationCount: 1,
+    animationTimingFunction: 'linear',
+  });
+
+  const [rotatingPart2, setRotatingPart2] = useState({
+    animationName: 'rotation2',
+    animationIterationCount: 1,
+    animationTimingFunction: 'linear',
+    animationFillMode: "forwards",
+  });
+
+  const [fixedPart, setFixedPart] = useState({
+     animationName: "fixed-part",
+    animationIterationCount: 1,
+    animationTimingFunction: "step-end",
+    animationFillMode: "forwards",
+  });
+
+  const [flashingPart, setFlashingPart] = useState({});
 
   const pausedAnim = timerStatus ? 'running' : 'paused';
-
   const endTimeFormatted = endTime + "s";
+  const elapsedTimeFormatted = "-" + passedTimeForAnim + "s";
 
-
-  const updateTimer = () => {
-    const currentTime = Date.now();
-    const passedTimeInTimer = currentTime - startTime.current;
-    
-    if (passedTimeInTimer / 1000 >= endTime) {
-      setPassedTime(endTime * 1000);
-      setTimerStatus(false);
-      cancelAnimationFrame(animationFrameRef.current);
-      return;
+  useEffect(() => {
+    try {
+      if(endTimeState > 3599){
+        setEndTimeState(3599);
+        throw new Error('Maximum time is 59 minutes and 59 seconds');
+      }
     }
-    
-    setPassedTime(passedTimeInTimer);
-    animationFrameRef.current = requestAnimationFrame(updateTimer);
-  };
+    catch(error) {
+      console.log(error);
+      alert(`Timer ${title} is longer than 59 minutes and 59 seconds, resetting to 59 minutes and 59 seconds...`);
+    }  
   
+  }, [endTimeState]);
+
   useEffect(() => {
     if (timerStatus) {
       startTime.current = Date.now() - passedTime;
@@ -44,6 +65,27 @@ const Timer = ({title, endTime, elapsedTime}) => {
     return () => cancelAnimationFrame(animationFrameRef.current);
   }, [timerStatus]);
 
+  
+  const updateTimer = () => {
+    const currentTime = Date.now();
+    const passedTimeInTimer = currentTime - startTime.current;
+    
+    if (passedTimeInTimer / 1000 >= endTimeState) {
+      setPassedTime(endTimeState * 1000);
+      setTimerStatus(false);
+      cancelAnimationFrame(animationFrameRef.current);
+
+      onEnd();
+
+      return;
+    }
+    setPassedTime(passedTimeInTimer);
+    animationFrameRef.current = requestAnimationFrame(updateTimer);
+  };
+
+
+  
+  
   function startTimer(){
     setTimerStatus(true);
     startTime.current = Date.now() - passedTime;
@@ -53,37 +95,96 @@ const Timer = ({title, endTime, elapsedTime}) => {
     setTimerStatus(false);
   }
 
+  function resetTimer() {
+    setTimerStatus(false);
+    setPassedTime(0);
+    setPassedTimeForAnim(0);
+    cancelAnimationFrame(animationFrameRef.current);
+  
+    setRotatingPart({ animationName: 'none' });
+    setRotatingPart2({ animationName: 'none' });
+    setFixedPart({ animationName: 'none' });
+  
+    setTimeout(() => {
+      setRotatingPart({
+        animationName: 'rotation',
+        animationIterationCount: 1,
+        animationTimingFunction: 'linear',
+      });
+  
+      setRotatingPart2({
+        animationName: 'rotation2',
+        animationIterationCount: 1,
+        animationTimingFunction: 'linear',
+        animationFillMode: 'forwards',
+      });
+  
+      setFixedPart({
+        animationName: 'fixed-part',
+        animationIterationCount: 1,
+        animationTimingFunction: 'step-end',
+        animationFillMode: 'forwards',
+      });
+  
+      setFlashingPart({}); 
+    }, 25); 
+  }
+  
+  function onEnd() {
+    setFlashingPart({
+      animationName: "flashing",
+      animationDuration: "1s",
+      animationIterationCount: "infinite",
+      animationTimingFunction: "linear",
+    });
+  }
+
+  // DISPLAYED TIME
   function formatTime(){
     let minutes = Math.floor(passedTime / (1000 * 60 ) % 60);
     let seconds = Math.floor(passedTime / (1000) % 60);
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
+  function formatTimeRemaining(){
+
+    let rem = endTimeState - Math.floor((passedTime / 1000));
+    let minutes = Math.floor(rem / 60  % 60);
+    let seconds = Math.floor(rem % 60);
+    if(minutes < 0 || seconds < 0){
+      return '00:00'
+    }else{
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    }
+  }
+
+
+  // HTML ELEMENTS
   return (
-    <div className='Timer'>
+    <div className='timer'>
       <div className='circles'>
-        <div className='outside-Circle' style={{border: '1px solid #26273d'}} />
-        <div className='outside-Circle' style={{backgroundColor:'transparent', border: '1px solid #26273d', zIndex: 10}} />
+        <div className='outside-circle' style={{border: '1px solid #26273d'}} />
+        <div className='outside-circle' style={{backgroundColor:'transparent', border: '1px solid #26273d', zIndex: 10}} />
 
-        <div className={'half-Circle'} style={{zIndex: 4, rotate: '-90deg'}}>
-          <div className={'firstPart'+ ' ' + 'fixedPart' } style={ {backgroundColor: '#545576', animationPlayState: pausedAnim}} />
+        <div className={'half-circle'} style={{zIndex: 4, rotate: '-90deg'}}>
+          <div id='a3' className={'firstPart'}  style={{...fixedPart, backgroundColor: '#545576', animationPlayState: pausedAnim, animationDuration: endTimeFormatted, animationDelay: elapsedTimeFormatted}} />
           <div className='secondPart'/> 
         </div>
 
-        <div className={'half-Circle' + ' ' + 'rotating-anim'}  style={{zIndex: 3 , rotate: '-90deg', animationDuration: endTimeFormatted, animationPlayState: pausedAnim}}>
-          <div className='firstPart' style={ {backgroundColor: '#67cb88'}} />
+        <div id='a1' className={'half-circle'}  style={{...rotatingPart, zIndex: 3 , rotate: '-90deg', animationDuration: endTimeFormatted, animationPlayState: pausedAnim, animationDelay: elapsedTimeFormatted}}>
+          <div id='a4' className='firstPart' style={ {...flashingPart, backgroundColor: '#67cb88'}} />
           <div className='secondPart'/> 
         </div>
 
-        <div className={'half-Circle' + ' ' + 'rotating-anim2'}  style={{zIndex: 2 , rotate: '-90deg', animationDuration: endTimeFormatted, animationPlayState: pausedAnim}}>
-          <div className='firstPart' style={ {backgroundColor: '#67cb88'}} />
+        <div id='a2' className={'half-circle'}  style={{...rotatingPart2,  zIndex: 2 , rotate: '-90deg', animationDuration: endTimeFormatted, animationPlayState: pausedAnim, animationDelay: elapsedTimeFormatted}}>
+          <div id='a5' className='firstPart' style={ {...flashingPart, backgroundColor: '#67cb88'}} />
           <div className='secondPart'/> 
         </div>
 
-        <div className='inside-Circle'>     
+        <div className='inside-circle'>     
           <p className='title-left'>{title}</p>
           <p className='time'>{formatTime()}</p>
-          <p className='title-left'>{endTime} left</p>
+          <p className='title-left'>{formatTimeRemaining()} left</p>
         </div>
 
       </div>
@@ -91,7 +192,7 @@ const Timer = ({title, endTime, elapsedTime}) => {
         <div className='button-group'>
           <button className='buttons' onClick={startTimer}>Start</button>  
           <button className='buttons' onClick={pauseTimer}>Pause</button>
-          <button className='buttons'>Reset</button>
+          <button className='buttons' onClick={resetTimer}>Reset</button>
         </div>
         
     </div>
