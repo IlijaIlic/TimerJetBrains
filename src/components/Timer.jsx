@@ -8,9 +8,9 @@ import '../css/Timer.css'
 const Timer = ({title, endTime, elapsedTime}) => {
 
   const [timerStatus, setTimerStatus] = useState(false);
-  const [passedTimeForAnim, setPassedTimeForAnim] = useState(elapsedTime*1000);
-  const [endTimeState, setEndTimeState] = useState(endTime);
+  const [passedTimeForAnim, setPassedTimeForAnim] = useState(elapsedTime);
   const [passedTime, setPassedTime] = useState(elapsedTime * 1000);
+  const [endTimeState, setEndTimeState] = useState(endTime);
   const startTime = useRef(0)
   const animationFrameRef = useRef(null);
 
