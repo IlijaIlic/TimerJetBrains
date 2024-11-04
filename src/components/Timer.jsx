@@ -1,8 +1,14 @@
-/* eslint-disable react/prop-types */
+ 
 
 import { useEffect, useRef, useState } from 'react'
 import '../css/Timer.css'
+import PropTypes from 'prop-types';
 
+/**
+ * @description  
+ * Timer component that displays a timer in the format MM:SS and has start, pause, reset buttons.
+ * Remaining time is also displayed visually.
+ */
 
 
 const Timer = ({title, endTime, elapsedTime}) => {
@@ -11,6 +17,7 @@ const Timer = ({title, endTime, elapsedTime}) => {
   const [passedTimeForAnim, setPassedTimeForAnim] = useState(elapsedTime);
   const [passedTime, setPassedTime] = useState(elapsedTime * 1000);
   const [endTimeState, setEndTimeState] = useState(endTime);
+
   const startTime = useRef(0)
   const animationFrameRef = useRef(null);
 
@@ -41,6 +48,12 @@ const Timer = ({title, endTime, elapsedTime}) => {
   const endTimeFormatted = endTime + "s";
   const elapsedTimeFormatted = "-" + passedTimeForAnim + "s";
 
+  /**
+   * UseEffect hook that checks if the
+   * endTime is greater than 59 minutes and 59 seconds
+   * and throws an error if it is, that alerts the user
+   * which timer has been reset to 59 minutes and 59 seconds
+  */
   useEffect(() => {
     try {
       if(endTimeState > 3599){
@@ -55,6 +68,10 @@ const Timer = ({title, endTime, elapsedTime}) => {
   
   }, [endTimeState]);
 
+  /**
+   * UseEffect hook that is triggered
+   * when the timer status changes
+   */
   useEffect(() => {
     if (timerStatus) {
       startTime.current = Date.now() - passedTime;
@@ -66,6 +83,10 @@ const Timer = ({title, endTime, elapsedTime}) => {
   }, [timerStatus]);
 
   
+  /**
+   * Function that updates the timer
+   * and checks if the timer has ended
+   */
   const updateTimer = () => {
     const currentTime = Date.now();
     const passedTimeInTimer = currentTime - startTime.current;
@@ -83,18 +104,28 @@ const Timer = ({title, endTime, elapsedTime}) => {
     animationFrameRef.current = requestAnimationFrame(updateTimer);
   };
 
-
-  
-  
+  /**
+   * Function that runs when the timer is started
+   * that sets the timer status to true
+   * and sets the startTime reference
+   */
   function startTimer(){
     setTimerStatus(true);
     startTime.current = Date.now() - passedTime;
   }
 
+  /**
+   * Function that runs when the timer is paused
+   */
   function pauseTimer(){
     setTimerStatus(false);
   }
 
+  /**
+   * Function that runs when the timer is reset
+   * that sets the timer back to 0
+   * and resets the animations after 25ms 
+   */
   function resetTimer() {
     setTimerStatus(false);
     setPassedTime(0);
@@ -130,6 +161,11 @@ const Timer = ({title, endTime, elapsedTime}) => {
     }, 25); 
   }
   
+  /**
+   * Function that runs when the timer ends
+   * that sets the flashing animation
+   * until the timer is reset
+   */
   function onEnd() {
     setFlashingPart({
       animationName: "flashing",
@@ -139,7 +175,9 @@ const Timer = ({title, endTime, elapsedTime}) => {
     });
   }
 
-  // DISPLAYED TIME
+  /**
+   * @returns formatted time based on passedTime state
+   */
   function formatTime(){
     let minutes = Math.floor(passedTime / (1000 * 60 ) % 60);
     let seconds = Math.floor(passedTime / (1000) % 60);
@@ -199,4 +237,12 @@ const Timer = ({title, endTime, elapsedTime}) => {
   )
 }
 
+Timer.propTypes = {
+  title: PropTypes.string.isRequired,
+  endTime: PropTypes.number.isRequired,
+  elapsedTime: PropTypes.number
+}
+
 export default Timer
+
+
