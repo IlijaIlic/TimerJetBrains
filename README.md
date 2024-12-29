@@ -17,3 +17,12 @@ Create a demo page with the component
 
 Publish your work to GitHub Pages, Vercel or somewhere else
 Extra bonus points for Storybook
+
+
+##
+
+# Result
+
+Vercel link: https://timer-jet-brains-git-main-ilija-ilics-projects.vercel.app/
+
+![alt text](https://github.com/IlijaIlic/TimerJetBrains/blob/main/SC1.png?raw=true)
