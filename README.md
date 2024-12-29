@@ -26,3 +26,5 @@ Extra bonus points for Storybook
 Vercel link: https://timer-jet-brains-git-main-ilija-ilics-projects.vercel.app/
 
 ![alt text](https://github.com/IlijaIlic/TimerJetBrains/blob/main/SC1.png?raw=true)
+![alt text](https://github.com/IlijaIlic/TimerJetBrains/blob/main/SC2.png?raw=true)
+
